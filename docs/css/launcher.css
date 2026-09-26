@@ -1,0 +1,114 @@
+/* =========================================================
+   LAUNCHER — the first screen with 3 launch options
+   ========================================================= */
+
+.launcher{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:24px;text-align:center;overflow-y:auto;
+
+  background:
+    radial-gradient(circle at 15% 10%, rgba(52,211,153,.16), transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(96,165,250,.16), transparent 45%),
+    #05080f;
+}
+.launcher.hide{display:none}
+
+/* Big ISPL badge on top */
+.l-badge{
+  width:96px;height:96px;border-radius:26px;
+  display:grid;place-items:center;
+  font-size:34px;font-weight:900;letter-spacing:-1px;
+  color:#04140d;
+  background:linear-gradient(135deg,#34d399,#fbbf24);
+  box-shadow:0 0 60px rgba(52,211,153,.45);
+  margin-bottom:14px;
+  animation:pop .6s cubic-bezier(.2,1.4,.5,1);
+}
+@keyframes pop{
+  from{transform:scale(.6);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+/* Title + subtitle */
+.launcher h1{
+  font-size:clamp(30px,6vw,48px);
+  font-weight:900;letter-spacing:-1.5px;
+}
+.launcher h1 span{
+  background:linear-gradient(90deg,#34d399,#fbbf24);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.launcher .sub{
+  color:var(--muted);font-size:15px;
+  margin-bottom:30px;max-width:520px;line-height:1.6;
+}
+
+/* The 3 launch cards grid */
+.launch-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(180px,230px));
+  gap:16px;width:100%;max-width:760px;
+}
+@media(max-width:700px){
+  .launch-grid{grid-template-columns:1fr;max-width:360px}
+}
+
+.launch-card{
+  position:relative;
+  border-radius:18px;padding:26px 18px;text-align:center;
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  transition:.22s;
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+}
+.launch-card:hover{
+  transform:translateY(-5px);
+  border-color:#3d5480;
+  box-shadow:0 16px 40px rgba(0,0,0,.5);
+}
+.launch-card .ico{font-size:32px}
+.launch-card .ttl{font-weight:800;font-size:16px}
+.launch-card .dsc{
+  font-size:12px;color:var(--muted);line-height:1.45;
+}
+
+/* "Works Now" variant */
+.launch-card.live{
+  border-color:rgba(52,211,153,.55);
+  background:linear-gradient(160deg,#0e2b22,#0d1b2c);
+}
+.launch-card.live .ttl{color:var(--green)}
+.launch-card.live:hover{
+  box-shadow:0 16px 44px rgba(52,211,153,.28);
+}
+
+/* "Coming Soon" variant */
+.launch-card.soon{opacity:.6;cursor:not-allowed}
+.launch-card.soon:hover{
+  transform:none;
+  border-color:var(--line);
+  box-shadow:none;
+}
+
+/* Small pill in the corner of each card */
+.pill{
+  position:absolute;top:10px;right:10px;
+  font-size:9.5px;font-weight:800;letter-spacing:.7px;
+  padding:3px 8px;border-radius:20px;text-transform:uppercase;
+}
+.pill.now{
+  background:rgba(52,211,153,.18);
+  color:var(--green);
+  border:1px solid rgba(52,211,153,.4);
+}
+.pill.later{
+  background:rgba(251,191,36,.13);
+  color:var(--gold);
+  border:1px solid rgba(251,191,36,.35);
+}
+
+/* Footer note */
+.launch-foot{
+  margin-top:26px;font-size:11.5px;color:#5a6684;
+}
