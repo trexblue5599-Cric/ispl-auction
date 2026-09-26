@@ -1,0 +1,322 @@
+/* =========================================================
+   VIEWS — team cards, player cards, retention, auction stage
+   ========================================================= */
+
+/* ========== TEAM CARDS ========== */
+.team-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px;
+}
+
+.team-card{
+  border-radius:var(--radius);overflow:hidden;position:relative;
+  background:var(--panel);border:1px solid var(--line);
+  transition:.2s;cursor:pointer;
+}
+.team-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 40px rgba(0,0,0,.5);
+  border-color:#3a4a6e;
+}
+
+/* Colored top band with badge + name */
+.tc-top{
+  padding:16px;position:relative;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+}
+.tc-top::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.42));
+}
+.tc-inner{
+  position:relative;z-index:2;
+  display:flex;align-items:center;gap:12px;
+}
+.tc-badge{
+  width:52px;height:52px;border-radius:14px;
+  display:grid;place-items:center;flex-shrink:0;
+  font-weight:900;font-size:16px;
+  background:rgba(0,0,0,.42);color:#fff;
+  border:2px solid var(--c3);letter-spacing:-.5px;
+  backdrop-filter:blur(4px);
+}
+.tc-name{
+  font-weight:900;font-size:16px;color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.6);line-height:1.2;
+}
+.tc-sub{
+  font-size:11px;color:rgba(255,255,255,.78);
+  font-weight:700;letter-spacing:.5px;margin-top:2px;
+}
+
+/* Bottom body with purse bar + stats */
+.tc-body{padding:14px 16px 16px}
+.purse-bar{
+  height:7px;border-radius:6px;background:#0a0f1b;
+  overflow:hidden;margin:9px 0 6px;
+}
+.purse-fill{
+  height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--c3),var(--c1));
+  transition:width .4s;
+}
+.tc-meta{
+  display:flex;justify-content:space-between;
+  font-size:11.5px;color:var(--muted);font-weight:700;
+}
+.tc-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;margin:13px 0 0;
+}
+.tc-stat{
+  background:#0b1120;border:1px solid var(--line);
+  border-radius:9px;padding:8px;text-align:center;
+}
+.tc-stat b{display:block;font-size:16px;font-weight:900}
+.tc-stat span{
+  font-size:9.5px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.6px;font-weight:700;
+}
+.tc-actions{display:flex;gap:7px;margin-top:12px}
+.tc-actions .btn{flex:1}
+
+/* ========== PLAYER CARDS ========== */
+.filters{
+  display:flex;gap:10px;flex-wrap:wrap;
+  margin-bottom:16px;align-items:center;
+}
+.filters input,.filters select{width:auto;min-width:130px;flex:1}
+.filters input[type=search]{flex:2;min-width:180px}
+
+.player-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:13px;
+}
+
+.p-card{
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;transition:.18s;position:relative;overflow:hidden;
+}
+.p-card:hover{
+  border-color:#3a4a6e;transform:translateY(-3px);
+  box-shadow:0 12px 30px rgba(0,0,0,.4);
+}
+.p-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--rc,#60a5fa);
+}
+
+.p-head{
+  display:flex;justify-content:space-between;
+  align-items:flex-start;gap:8px;margin-bottom:9px;
+}
+.p-name{font-weight:800;font-size:14.5px;line-height:1.25}
+
+.p-role{
+  font-size:10px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.6px;padding:3px 8px;border-radius:20px;
+  white-space:nowrap;
+}
+.role-Batter{background:rgba(96,165,250,.16);color:#93c5fd}
+.role-Bowler{background:rgba(248,113,113,.16);color:#fca5a5}
+.role-All-Rounder{background:rgba(167,139,250,.16);color:#c4b5fd}
+.role-Wicket-Keeper{background:rgba(52,211,153,.16);color:#6ee7b7}
+
+.p-info{
+  font-size:11.5px;color:var(--muted);
+  display:flex;flex-wrap:wrap;gap:4px 12px;
+  margin-bottom:10px;font-weight:600;
+}
+
+.p-foot{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:8px;
+  padding-top:10px;border-top:1px solid var(--line);
+}
+.p-price{font-weight:900;font-size:14px;color:var(--gold)}
+.p-price small{
+  display:block;font-size:9.5px;color:var(--muted);
+  font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+}
+.p-actions{display:flex;gap:6px;margin-top:11px}
+
+/* ========== RETENTION ========== */
+.chip-row{
+  display:flex;gap:9px;flex-wrap:wrap;
+  margin-bottom:20px;overflow-x:auto;padding-bottom:4px;
+}
+.chip{
+  padding:9px 15px;border-radius:11px;
+  font-weight:800;font-size:12.5px;
+  border:1px solid var(--line);background:var(--panel2);
+  transition:.18s;display:flex;align-items:center;gap:8px;
+  white-space:nowrap;flex-shrink:0;
+}
+.chip:hover{transform:translateY(-2px)}
+.chip.active{
+  box-shadow:0 0 0 2px var(--c3),0 8px 22px rgba(0,0,0,.4);
+  color:#fff;
+}
+.chip .dot{
+  width:11px;height:11px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  border:1px solid var(--c3);
+}
+
+.ret-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:20px;align-items:start;
+}
+@media(max-width:900px){.ret-layout{grid-template-columns:1fr}}
+
+.slot{
+  display:flex;align-items:center;gap:11px;
+  padding:11px;border-radius:11px;
+  background:#0b1120;border:1px dashed var(--line);
+  margin-bottom:9px;
+}
+.slot.filled{
+  border-style:solid;border-color:#2f8f6d;
+  background:linear-gradient(90deg,rgba(52,211,153,.07),transparent);
+}
+.slot .num{
+  width:28px;height:28px;border-radius:8px;
+  display:grid;place-items:center;flex-shrink:0;
+  background:var(--panel3);font-size:12px;
+  font-weight:900;color:var(--muted);
+}
+.slot.filled .num{
+  background:linear-gradient(135deg,#34d399,#10b981);
+  color:#04140d;
+}
+.slot .txt{flex:1;min-width:0}
+.slot .txt b{display:block;font-size:13.5px;font-weight:800}
+.slot .txt span{font-size:11px;color:var(--muted);font-weight:600}
+
+/* ========== AUCTION ========== */
+.auc-layout{
+  display:grid;grid-template-columns:320px 1fr;
+  gap:18px;align-items:start;
+}
+@media(max-width:960px){.auc-layout{grid-template-columns:1fr}}
+
+.auc-list{max-height:600px;overflow-y:auto;padding-right:5px}
+
+.auc-item{
+  display:flex;align-items:center;gap:11px;
+  padding:11px;border-radius:11px;
+  background:var(--panel2);border:1px solid var(--line);
+  margin-bottom:8px;transition:.15s;
+  width:100%;text-align:left;
+}
+.auc-item:hover{border-color:#34d399;transform:translateX(3px)}
+.auc-item.sel{
+  border-color:#34d399;
+  background:linear-gradient(90deg,rgba(52,211,153,.13),var(--panel2));
+}
+.auc-item .av{
+  width:38px;height:38px;border-radius:10px;
+  display:grid;place-items:center;flex-shrink:0;
+  font-weight:900;font-size:14px;
+  background:linear-gradient(135deg,#1e293b,#0f172a);
+  color:#94a3b8;border:1px solid var(--line);
+}
+.auc-item .nm{font-weight:800;font-size:13.5px;line-height:1.2}
+.auc-item .mt{
+  font-size:10.5px;color:var(--muted);
+  font-weight:600;margin-top:2px;
+}
+
+/* Auction stage (big card on the right) */
+.stage{
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);border-radius:18px;
+  padding:22px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.stage::before{
+  content:'';position:absolute;top:-60%;left:50%;
+  transform:translateX(-50%);width:520px;height:520px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(52,211,153,.13),transparent 65%);
+}
+.stage-inner{position:relative;z-index:2}
+
+.stage .pname{
+  font-size:clamp(22px,4vw,32px);
+  font-weight:900;letter-spacing:-1px;margin-bottom:5px;
+}
+.stage .pmeta{
+  color:var(--muted);font-size:12.5px;
+  font-weight:600;margin-bottom:16px;
+}
+
+/* Bid display box */
+.bidbox{
+  display:inline-flex;flex-direction:column;align-items:center;gap:3px;
+  padding:14px 34px;border-radius:16px;
+  background:#080d17;border:1px solid var(--line);
+  margin-bottom:8px;
+}
+.bidbox .lbl{
+  font-size:10.5px;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--muted);font-weight:800;
+}
+.bidbox .amt{
+  font-size:36px;font-weight:900;
+  letter-spacing:-1.5px;color:var(--gold);line-height:1;
+}
+.bidbox .whos{
+  font-size:12px;font-weight:800;
+  margin-top:5px;color:var(--muted);
+}
+
+/* Increment pills */
+.inc-row{
+  display:flex;gap:7px;justify-content:center;
+  margin:14px 0;flex-wrap:wrap;align-items:center;
+}
+.inc{
+  padding:6px 12px;border-radius:20px;
+  font-size:12px;font-weight:800;
+  background:var(--panel3);border:1px solid var(--line);
+  color:var(--muted);
+}
+.inc.on{
+  background:rgba(52,211,153,.17);
+  color:#6ee7b7;
+  border-color:rgba(52,211,153,.45);
+}
+
+/* Team bid buttons grid */
+.bid-teams{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:9px;margin-top:8px;
+}
+.bid-team{
+  padding:11px;border-radius:11px;text-align:left;
+  border:1px solid var(--line);
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  position:relative;overflow:hidden;transition:.15s;
+}
+.bid-team::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(0,0,0,.5);transition:.15s;
+}
+.bid-team:hover:not(:disabled)::after{background:rgba(0,0,0,.28)}
+.bid-team:active:not(:disabled){transform:scale(.97)}
+.bid-team:disabled{opacity:.3;cursor:not-allowed}
+.bid-team .bt-in{position:relative;z-index:2;color:#fff}
+.bid-team .bt-in b{display:block;font-size:12.5px;font-weight:900}
+.bid-team .bt-in span{font-size:10.5px;opacity:.85;font-weight:700}
+
+/* SOLD / UNSOLD hammer buttons row */
+.hammer-row{
+  display:flex;gap:10px;justify-content:center;
+  margin-top:20px;flex-wrap:wrap;
+}
+.hammer-row .btn{padding:13px 32px;font-size:14px}
