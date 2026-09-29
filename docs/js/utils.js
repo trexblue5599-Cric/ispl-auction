@@ -1,6 +1,6 @@
 /* =========================================================
    UTILS — tiny helpers used everywhere
-   $ , $$ , uid , esc , money , debounce
+   $ , $$ , uid , esc , money , flag , debounce
    ========================================================= */
 
 ISPL.utils = (function () {
@@ -11,7 +11,7 @@ ISPL.utils = (function () {
   /* querySelectorAll → array (not NodeList) */
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  /* Random short id — used for new teams/players */
+  /* Random short id */
   const uid = () => Math.random().toString(36).slice(2, 9);
 
   /* Escape user text before injecting into innerHTML */
@@ -38,7 +38,12 @@ ISPL.utils = (function () {
     return l + ' L';
   }
 
-  /* Delay a function — used for the search filter */
+  /* Country flag emoji */
+  function flag(country) {
+    return ISPL.config.flagOf(country);
+  }
+
+  /* Delay a function */
   function debounce(fn, ms = 200) {
     let timer;
     return function (...args) {
@@ -47,5 +52,5 @@ ISPL.utils = (function () {
     };
   }
 
-  return { $, $$, uid, esc, money, debounce };
+  return { $, $$, uid, esc, money, flag, debounce };
 })();
