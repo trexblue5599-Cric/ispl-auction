@@ -1,6 +1,5 @@
 /* =========================================================
    APP — router, navigation, init, global actions
-   Loaded last. Wires everything together.
    ========================================================= */
 
 ISPL.app = (function () {
@@ -19,6 +18,9 @@ ISPL.app = (function () {
 
   let currentTab = 'dashboard';
 
+  /* =========================================================
+     NAVIGATION
+     ========================================================= */
   function buildNav() {
     const topNav    = document.getElementById('tabs');
     const bottomNav = document.getElementById('bottomNav');
@@ -39,14 +41,26 @@ ISPL.app = (function () {
   }
 
   function go(tabId) {
-    if (!TABS.some(t => t.id === tabId)) return;
+    if (!TABS.some(t => t.id === tabId) && tabId !== 'squad') return;
     currentTab = tabId;
     render();
   }
 
+  /* Squad is a detail page — not shown in the nav, but routed like a tab */
+  function goSquad(teamId) {
+    S.setSquadTeam(teamId);
+    currentTab = 'squad';
+    render();
+  }
+
+  /* =========================================================
+     RENDER
+     ========================================================= */
   function render() {
+    /* Highlight active tab in both navs (squad → highlight dashboard) */
+    const navHighlight = currentTab === 'squad' ? 'dashboard' : currentTab;
     $$('[data-tab]').forEach(b => {
-      b.classList.toggle('active', b.dataset.tab === currentTab);
+      b.classList.toggle('active', b.dataset.tab === navHighlight);
     });
 
     const view = document.getElementById('view');
@@ -72,11 +86,18 @@ ISPL.app = (function () {
       case 'auction':
         view.innerHTML = ISPL.views.auction.render();
         break;
+
+      case 'squad':
+        view.innerHTML = ISPL.views.squad.render();
+        break;
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /* =========================================================
+     GLOBAL ACTIONS
+     ========================================================= */
   function exportData() {
     const json = S.exportJSON();
     const blob = new Blob([json], { type: 'application/json' });
@@ -103,12 +124,18 @@ ISPL.app = (function () {
     UI.toast('Auction reset to defaults', 'ok');
   }
 
+  /* =========================================================
+     LAUNCHER
+     ========================================================= */
   function launch() {
     document.getElementById('launcher').classList.add('hide');
     document.getElementById('app').classList.add('on');
     render();
   }
 
+  /* =========================================================
+     RESPONSIVE NAV
+     ========================================================= */
   function setupResponsiveNav() {
     const mq = window.matchMedia('(max-width: 760px)');
     const bottomNav = document.getElementById('bottomNav');
@@ -118,6 +145,9 @@ ISPL.app = (function () {
     apply();
   }
 
+  /* =========================================================
+     INIT
+     ========================================================= */
   function init() {
     S.load();
     S.save();
@@ -141,8 +171,12 @@ ISPL.app = (function () {
 
   document.addEventListener('DOMContentLoaded', init);
 
+  /* =========================================================
+     PUBLIC API
+     ========================================================= */
   return {
     go,
+    goSquad,
     render,
     launch,
     get tab() { return currentTab; }
