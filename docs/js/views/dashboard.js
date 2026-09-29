@@ -1,6 +1,6 @@
 /* =========================================================
    VIEW — Dashboard
-   Overview stats + team cards grid
+   Overview stats + team cards (click → squad page)
    ========================================================= */
 
 ISPL.views = ISPL.views || {};
@@ -37,7 +37,7 @@ ISPL.views.dashboard = function () {
 
   <div class="section-head">
     <h2>Team Overview</h2>
-    <button class="btn sm ghost" onclick="ISPL.app.go('teams')">Manage Teams →</button>
+    <span style="font-size:12px;color:var(--muted);font-weight:700">Tap a team to see their squad</span>
   </div>
 
   ${data.teams.length
@@ -50,7 +50,7 @@ ISPL.views.dashboard = function () {
   `;
 };
 
-/* -------- One team card (dashboard version, read-only) -------- */
+/* -------- One team card (click → squad) -------- */
 function teamCard(t) {
   const { esc, money } = ISPL.utils;
   const S = ISPL.state;
@@ -62,7 +62,7 @@ function teamCard(t) {
   return `
   <div class="team-card"
        style="--c1:${t.primary};--c2:${t.secondary};--c3:${t.accent}"
-       onclick="ISPL.app.go('teams')">
+       onclick="ISPL.app.goSquad('${t.id}')">
     <div class="tc-top">
       <div class="tc-inner">
         <div class="tc-badge">${esc(t.short)}</div>
