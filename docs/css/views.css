@@ -1,5 +1,5 @@
 /* =========================================================
-   VIEWS — team cards, player cards, retention, auction stage
+   VIEWS — team cards, player cards, retention, auction, squad
    ========================================================= */
 
 /* ========== TEAM CARDS ========== */
@@ -8,7 +8,6 @@
   grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
   gap:16px;
 }
-
 .team-card{
   border-radius:var(--radius);overflow:hidden;position:relative;
   background:var(--panel);border:1px solid var(--line);
@@ -19,8 +18,6 @@
   box-shadow:0 18px 40px rgba(0,0,0,.5);
   border-color:#3a4a6e;
 }
-
-/* Colored top band with badge + name */
 .tc-top{
   padding:16px;position:relative;
   background:linear-gradient(135deg,var(--c1),var(--c2));
@@ -49,8 +46,6 @@
   font-size:11px;color:rgba(255,255,255,.78);
   font-weight:700;letter-spacing:.5px;margin-top:2px;
 }
-
-/* Bottom body with purse bar + stats */
 .tc-body{padding:14px 16px 16px}
 .purse-bar{
   height:7px;border-radius:6px;background:#0a0f1b;
@@ -94,7 +89,6 @@
   grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
   gap:13px;
 }
-
 .p-card{
   background:linear-gradient(160deg,var(--panel2),var(--panel));
   border:1px solid var(--line);border-radius:var(--radius);
@@ -108,13 +102,11 @@
   content:'';position:absolute;left:0;top:0;bottom:0;
   width:3px;background:var(--rc,#60a5fa);
 }
-
 .p-head{
   display:flex;justify-content:space-between;
   align-items:flex-start;gap:8px;margin-bottom:9px;
 }
 .p-name{font-weight:800;font-size:14.5px;line-height:1.25}
-
 .p-role{
   font-size:10px;font-weight:800;text-transform:uppercase;
   letter-spacing:.6px;padding:3px 8px;border-radius:20px;
@@ -124,13 +116,11 @@
 .role-Bowler{background:rgba(248,113,113,.16);color:#fca5a5}
 .role-All-Rounder{background:rgba(167,139,250,.16);color:#c4b5fd}
 .role-Wicket-Keeper{background:rgba(52,211,153,.16);color:#6ee7b7}
-
 .p-info{
   font-size:11.5px;color:var(--muted);
   display:flex;flex-wrap:wrap;gap:4px 12px;
   margin-bottom:10px;font-weight:600;
 }
-
 .p-foot{
   display:flex;justify-content:space-between;
   align-items:center;gap:8px;
@@ -165,13 +155,11 @@
   background:linear-gradient(135deg,var(--c1),var(--c2));
   border:1px solid var(--c3);
 }
-
 .ret-layout{
   display:grid;grid-template-columns:1fr 1fr;
   gap:20px;align-items:start;
 }
 @media(max-width:900px){.ret-layout{grid-template-columns:1fr}}
-
 .slot{
   display:flex;align-items:center;gap:11px;
   padding:11px;border-radius:11px;
@@ -202,9 +190,7 @@
   gap:18px;align-items:start;
 }
 @media(max-width:960px){.auc-layout{grid-template-columns:1fr}}
-
 .auc-list{max-height:600px;overflow-y:auto;padding-right:5px}
-
 .auc-item{
   display:flex;align-items:center;gap:11px;
   padding:11px;border-radius:11px;
@@ -229,8 +215,6 @@
   font-size:10.5px;color:var(--muted);
   font-weight:600;margin-top:2px;
 }
-
-/* Auction stage (big card on the right) */
 .stage{
   background:linear-gradient(160deg,var(--panel2),var(--panel));
   border:1px solid var(--line);border-radius:18px;
@@ -244,7 +228,6 @@
   background:radial-gradient(circle,rgba(52,211,153,.13),transparent 65%);
 }
 .stage-inner{position:relative;z-index:2}
-
 .stage .pname{
   font-size:clamp(22px,4vw,32px);
   font-weight:900;letter-spacing:-1px;margin-bottom:5px;
@@ -253,8 +236,6 @@
   color:var(--muted);font-size:12.5px;
   font-weight:600;margin-bottom:16px;
 }
-
-/* Bid display box */
 .bidbox{
   display:inline-flex;flex-direction:column;align-items:center;gap:3px;
   padding:14px 34px;border-radius:16px;
@@ -273,8 +254,6 @@
   font-size:12px;font-weight:800;
   margin-top:5px;color:var(--muted);
 }
-
-/* Increment pills */
 .inc-row{
   display:flex;gap:7px;justify-content:center;
   margin:14px 0;flex-wrap:wrap;align-items:center;
@@ -290,8 +269,6 @@
   color:#6ee7b7;
   border-color:rgba(52,211,153,.45);
 }
-
-/* Team bid buttons grid */
 .bid-teams{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
@@ -313,10 +290,125 @@
 .bid-team .bt-in{position:relative;z-index:2;color:#fff}
 .bid-team .bt-in b{display:block;font-size:12.5px;font-weight:900}
 .bid-team .bt-in span{font-size:10.5px;opacity:.85;font-weight:700}
-
-/* SOLD / UNSOLD hammer buttons row */
 .hammer-row{
   display:flex;gap:10px;justify-content:center;
   margin-top:20px;flex-wrap:wrap;
 }
 .hammer-row .btn{padding:13px 32px;font-size:14px}
+
+/* =========================================================
+   SQUAD PAGE
+   ========================================================= */
+.squad-header{
+  border-radius:18px;padding:22px;
+  position:relative;overflow:hidden;margin-bottom:16px;
+}
+.squad-header::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.42));
+}
+.squad-header-inner{
+  position:relative;z-index:2;
+  display:flex;align-items:center;gap:14px;
+}
+.squad-badge{
+  width:64px;height:64px;border-radius:16px;
+  display:grid;place-items:center;flex-shrink:0;
+  font-weight:900;font-size:20px;letter-spacing:-1px;
+  background:rgba(0,0,0,.42);color:#fff;
+  border:2px solid #fff;backdrop-filter:blur(4px);
+}
+.squad-name{
+  font-weight:900;font-size:22px;color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.6);line-height:1.2;
+  letter-spacing:-.5px;
+}
+.squad-sub{
+  font-size:12px;color:rgba(255,255,255,.82);
+  font-weight:700;letter-spacing:.4px;margin-top:4px;
+}
+
+.squad-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;margin-bottom:20px;
+}
+.squad-stat{
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:13px;text-align:center;
+}
+.squad-stat b{
+  display:block;font-size:18px;font-weight:900;
+  letter-spacing:-.5px;line-height:1.1;
+}
+.squad-stat span{
+  font-size:10.5px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.7px;
+  font-weight:700;margin-top:4px;display:block;
+}
+
+.squad-section{
+  margin-bottom:22px;
+}
+.squad-section-head{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;margin-bottom:10px;
+  background:linear-gradient(90deg,rgba(255,255,255,.04),transparent);
+  border-left:3px solid var(--green);
+  border-radius:6px;
+}
+.squad-section-icon{
+  font-size:18px;
+}
+.squad-section-head h3{
+  flex:1;font-size:14px;font-weight:900;
+  letter-spacing:.4px;text-transform:uppercase;
+  color:var(--txt);
+}
+.squad-players{
+  display:flex;flex-direction:column;gap:8px;
+}
+.squad-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:12px;
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  transition:.15s;
+}
+.squad-row:hover{
+  border-color:#3a4a6e;
+  transform:translateX(3px);
+}
+.squad-flag{
+  font-size:22px;flex-shrink:0;
+  width:36px;text-align:center;
+}
+.squad-pname{
+  font-weight:800;font-size:14px;line-height:1.2;
+}
+.squad-pmeta{
+  font-size:11px;color:var(--muted);
+  font-weight:600;margin-top:3px;
+  display:flex;align-items:center;gap:8px;
+  flex-wrap:wrap;
+}
+.squad-bowl{
+  font-size:10px;font-weight:800;
+  letter-spacing:.4px;text-transform:uppercase;
+  padding:2px 7px;border-radius:20px;
+  background:rgba(96,165,250,.15);
+  color:#93c5fd;
+  border:1px solid rgba(96,165,250,.3);
+}
+.squad-price{
+  font-weight:900;font-size:14px;
+  color:var(--gold);margin-bottom:4px;
+}
+
+@media(max-width:600px){
+  .squad-name{font-size:18px}
+  .squad-badge{width:52px;height:52px;font-size:16px}
+  .squad-flag{font-size:18px;width:28px}
+  .squad-pname{font-size:13px}
+  .squad-price{font-size:13px}
+}
