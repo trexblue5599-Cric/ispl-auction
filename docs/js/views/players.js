@@ -7,14 +7,12 @@ ISPL.views = ISPL.views || {};
 
 ISPL.views.players = (function () {
 
-  const { $, $$, esc, money } = ISPL.utils;
+  const { $, $$, esc, money, flag } = ISPL.utils;
   const S  = ISPL.state;
   const UI = ISPL.ui;
 
-  /* -------- Filter state lives here, not in DOM -------- */
   const filters = { q: '', role: '', status: '', country: '' };
 
-  /* Role → left-edge color */
   const ROLE_COLOR = {
     'Batter':        '#60a5fa',
     'Bowler':        '#f87171',
@@ -54,8 +52,9 @@ ISPL.views.players = (function () {
 
       <select data-filter="country">
         <option value="">All Countries</option>
-        <option value="India"    ${filters.country === 'India'    ? 'selected' : ''}>India</option>
-        <option value="Overseas" ${filters.country === 'Overseas' ? 'selected' : ''}>Overseas</option>
+        ${ISPL.config.COUNTRIES.map(c =>
+          `<option value="${c.name}" ${filters.country === c.name ? 'selected' : ''}>${c.flag} ${c.name}</option>`
+        ).join('')}
       </select>
 
       <button class="btn sm ghost" onclick="ISPL.views.players.clearFilters()">Clear</button>
@@ -66,7 +65,6 @@ ISPL.views.players = (function () {
     </div>`;
   }
 
-  /* -------- Just the grid part (so we can swap it on filter) -------- */
   function gridHTML(list) {
     if (!list.length) {
       return `<div class="empty">
@@ -78,10 +76,12 @@ ISPL.views.players = (function () {
     return `<div class="player-grid">${list.map(card).join('')}</div>`;
   }
 
-  /* -------- One player card -------- */
+  /* =========================================================
+     CARD
+     ========================================================= */
   function card(p) {
-    const rc    = ROLE_COLOR[p.role] || '#60a5fa';
-    const team  = p.teamId ? S.team(p.teamId) : null;
+    const rc   = ROLE_COLOR[p.role] || '#60a5fa';
+    const team = p.teamId ? S.team(p.teamId) : null;
 
     const badge = {
       available: 'b-available',
@@ -97,18 +97,24 @@ ISPL.views.players = (function () {
       unsold:    'Unsold'
     }[p.status];
 
+    /* Bowl style shown only for bowlers */
+    const showBowl = p.role === 'Bowler' && p.bowlStyle && p.bowlStyle !== '—';
+    const bowlText = showBowl ? ` · ${p.bowlStyle}` : '';
+
     return `
     <div class="p-card" style="--rc:${rc}">
       <div class="p-head">
         <div>
           <div class="p-name">${esc(p.name)}</div>
           <div class="p-info" style="margin-top:5px">
-            <span>${esc(p.country)}</span>
+            <span>${flag(p.country)} ${esc(p.country)}</span>
             <span>${p.age} yrs</span>
           </div>
         </div>
         <span class="p-role role-${p.role.replace(/\s/g, '-')}">${p.role}</span>
       </div>
+
+      ${showBowl ? `<div class="p-info"><span>🎯 ${esc(p.bowlStyle)}</span></div>` : ''}
 
       <div class="p-info">
         ${team ? `<span>🏏 ${esc(team.short)}</span>` : ''}
@@ -148,26 +154,20 @@ ISPL.views.players = (function () {
   function clearFilters() {
     Object.keys(filters).forEach(k => { filters[k] = ''; });
     refreshGrid();
-
-    // Reset input values visually
     $$('[data-filter]').forEach(el => { el.value = ''; });
   }
 
-  /* Only swap the grid, keep filters + focus intact */
   function refreshGrid() {
     const grid = $('#playersGrid');
     if (!grid) return;
 
     const list = filtered();
-
-    // Update the counter in the section head
     const counter = document.querySelector('.section-head .count');
     if (counter) counter.textContent = `${list.length} / ${S.data.players.length}`;
 
     grid.innerHTML = gridHTML(list);
   }
 
-  /* Wire the filter inputs to setFilter */
   function wireFilters() {
     $$('[data-filter]').forEach(el => {
       el.oninput  = () => setFilter(el.dataset.filter, el.value);
@@ -187,7 +187,8 @@ ISPL.views.players = (function () {
       role: 'Batter',
       country: 'India',
       age: 25,
-      basePrice: 20
+      basePrice: 20,
+      bowlStyle: '—'
     };
 
     UI.openModal(isEdit ? 'Edit Player Profile' : 'Create Player Profile', `
@@ -205,8 +206,19 @@ ISPL.views.players = (function () {
         </label>
         <label>Country
           <select id="p_country">
-            <option ${d.country === 'India'    ? 'selected' : ''}>India</option>
-            <option ${d.country === 'Overseas' ? 'selected' : ''}>Overseas</option>
+            ${ISPL.config.COUNTRIES.map(c =>
+              `<option value="${c.name}" ${d.country === c.name ? 'selected' : ''}>${c.flag} ${c.name}</option>`
+            ).join('')}
+          </select>
+        </label>
+      </div>
+
+      <div id="bowlRow" style="display:none">
+        <label>Bowling Style
+          <select id="p_bowl">
+            ${ISPL.config.BOWL_STYLES.map(s =>
+              `<option ${d.bowlStyle === s ? 'selected' : ''}>${s}</option>`
+            ).join('')}
           </select>
         </label>
       </div>
@@ -226,16 +238,28 @@ ISPL.views.players = (function () {
       </div>
     `, root => {
 
+      /* Show/hide bowl style row based on role */
+      const roleSel  = $('#p_role', root);
+      const bowlRow  = $('#bowlRow', root);
+
+      const toggleBowl = () => {
+        bowlRow.style.display = roleSel.value === 'Bowler' ? 'block' : 'none';
+      };
+      roleSel.onchange = toggleBowl;
+      toggleBowl();
+
       $('#saveP', root).onclick = () => {
         const name = $('#p_name', root).value.trim();
         if (!name) return UI.toast('Please enter a player name', 'err');
 
+        const role = roleSel.value;
         const info = {
           name,
-          role:      $('#p_role',    root).value,
+          role,
           country:   $('#p_country', root).value,
           age:       Math.max(15, Number($('#p_age',  root).value) || 25),
-          basePrice: Math.max(0,  Number($('#p_base', root).value) || 0)
+          basePrice: Math.max(0,  Number($('#p_base', root).value) || 0),
+          bowlStyle: role === 'Bowler' ? $('#p_bowl', root).value : '—'
         };
 
         if (isEdit) {
@@ -259,7 +283,6 @@ ISPL.views.players = (function () {
   function remove(playerId) {
     const p = S.player(playerId);
     if (!p) return;
-
     if (!UI.confirm(`Delete "${p.name}"?`)) return;
 
     S.deletePlayer(playerId);
