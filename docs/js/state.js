@@ -1,8 +1,5 @@
 /* =========================================================
    STATE — single source of truth for all app data
-   - Loads from / saves to localStorage
-   - Exposes derived values (teamLeft, retainedOf, etc.)
-   - All mutations go through this file
    ========================================================= */
 
 ISPL.state = (function () {
@@ -10,8 +7,10 @@ ISPL.state = (function () {
   const { STORAGE_KEY, DEFAULT_TEAMS, DEFAULT_PURSE, buildDefaultPlayers, MAX_RETENTIONS } = ISPL.config;
   const { uid } = ISPL.utils;
 
-  /* The live data object. Never reassigned — only mutated. */
   let data = null;
+
+  /* Current squad page team (not persisted) */
+  let squadTeamId = null;
 
   /* ---------- Fresh / Load / Save / Reset ---------- */
   function fresh() {
@@ -30,11 +29,11 @@ ISPL.state = (function () {
       const parsed = JSON.parse(raw);
       if (!parsed.teams || !parsed.players) { data = fresh(); return data; }
 
-      // Repair older saves that might be missing fields
       if (!parsed.auction) {
         parsed.auction = { playerId: null, bid: 0, bidderId: null, increment: 10 };
       }
       parsed.teams.forEach(t => { if (!Array.isArray(t.players)) t.players = []; });
+      parsed.players.forEach(p => { if (!p.bowlStyle) p.bowlStyle = '—'; });
 
       data = parsed;
     } catch (err) {
@@ -85,7 +84,6 @@ ISPL.state = (function () {
   }
 
   function deleteTeam(id) {
-    // Release all their players back to the pool
     data.players.forEach(p => {
       if (p.teamId === id) {
         p.teamId = null;
@@ -95,11 +93,11 @@ ISPL.state = (function () {
     });
     data.teams = data.teams.filter(t => t.id !== id);
 
-    // If the deleted team was mid-bid, clear the auction
     if (data.auction.bidderId === id) {
       data.auction.bidderId = null;
       data.auction.bid = data.auction.playerId ? player(data.auction.playerId)?.basePrice || 0 : 0;
     }
+    if (squadTeamId === id) squadTeamId = null;
   }
 
   /* =========================================================
@@ -112,6 +110,7 @@ ISPL.state = (function () {
       status: 'available',
       teamId: null,
       price: null,
+      bowlStyle: '—',
       ...info
     };
     data.players.push(p);
@@ -183,7 +182,6 @@ ISPL.state = (function () {
     const t = team(teamId);
     if (!p || !t) return { ok: false, msg: 'Player or team not found' };
 
-    // First bid = base price. Subsequent bids = current + increment
     const nextBid = a.bidderId ? a.bid + a.increment : (a.bid || p.basePrice);
 
     if (teamLeft(teamId) < nextBid) {
@@ -233,7 +231,13 @@ ISPL.state = (function () {
   }
 
   /* =========================================================
-     EXPORT
+     SQUAD PAGE
+     ========================================================= */
+  function setSquadTeam(teamId) { squadTeamId = teamId; }
+  function getSquadTeam()       { return squadTeamId ? team(squadTeamId) : null; }
+
+  /* =========================================================
+     EXPORT / IMPORT
      ========================================================= */
   function exportJSON() {
     return JSON.stringify(data, null, 2);
@@ -255,29 +259,22 @@ ISPL.state = (function () {
      PUBLIC API
      ========================================================= */
   return {
-    /* lifecycle */
     load, save, reset,
 
-    /* raw data access */
     get data() { return data; },
 
-    /* lookups */
     team, player,
     teamPlayers, teamSpent, teamLeft, retainedOf, boughtOf, availablePlayers,
 
-    /* team mutations */
     addTeam, updateTeam, deleteTeam,
-
-    /* player mutations */
     addPlayer, updatePlayer, deletePlayer,
 
-    /* retention */
     retain, release,
 
-    /* auction */
     setAuction, setIncrement, updateBid, sellCurrent, markUnsold, clearAuction,
 
-    /* import / export */
+    setSquadTeam, getSquadTeam,
+
     exportJSON, importJSON
   };
 })();
